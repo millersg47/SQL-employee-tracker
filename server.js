@@ -1,9 +1,9 @@
 const express = require('express');
 const mysql = require('mysql2');
+const 
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-const api = express.Router();
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
@@ -17,30 +17,13 @@ const db = mysql.createConnection(
     user: 'root',
     // MySQL password
     password: 'mysqlpassword',
-    database: 'movies_db'
+    database: 'business_db'
   },
 );
 
-api.get('/api/', (req, res) =>{
-    db.query('', function (err, results) {
-      });
-
-
-});
-
-api.post('/api/', (req, res) =>{
-    db.query('', function (err, results) {
-      });
-
-
-});
-
-api.delete('/api/', (req, res) =>{
-    db.query('', function (err, results) {
-      });
-
-
-});
+app.use('/departments', depts);
+app.use('/roles', roles);
+app.use('/employees', emps);
 
 
 app.listen(PORT, () => {
