@@ -18,30 +18,38 @@ function firstQ(){
     {
       name: 'starterQuest',
       message: 'What do you want to do?',
-      choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee'],
+      choices: [
+        'view all departments', 
+        'view all roles', 
+        'view all employees', 
+        'add a department', 
+        'add a role', 
+        'add an employee', 
+        'update an employee',
+        'exit application'],
       type: 'list'
     }
   ])
-   .then(answers => {
-    let answer = answers.starterQuest;
-    console.log(answer);
-    checkAns(answer);
-    return
-  })
-}; 
+   .then (function(answer) {
+     checkAns(answer);
+   });
+}
 
 function checkAns(answer) {
   if(answer === 'view all departments') {
   //need to add the depts.get route here
   } else if (answer === 'view all roles') {
-
+  //need to add the roles.get route here
   } else if (answer === 'view all employees') {
-
+  //need to add the emps.get route here
   } else if (answer === 'add a department') {
+    //collects user input
     addDept();
-    
+    //need to add depts.post route here
   } else if (answer === 'add a role') {
+    //collects user input
     addRole();
+    //need to add roles.post route here
   } else if (answer === 'add an employee') {
   
   } else if (answer === 'update an employee') {
@@ -62,6 +70,7 @@ function addDept() {
     console.log(answers);
     //need to add the depts.post route here
   })
+  .the(firstQ())
 }; 
 
 function addRole() {
@@ -87,6 +96,7 @@ function addRole() {
     console.log(answers);
     //need to add the depts.post route here
   })
+  .then(firstQ())
 }
 
 app.listen(PORT, () => {
