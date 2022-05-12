@@ -41,7 +41,7 @@ function checkAns(answer) {
     addDept();
     
   } else if (answer === 'add a role') {
-
+    addRole();
   } else if (answer === 'add an employee') {
   
   } else if (answer === 'update an employee') {
@@ -56,6 +56,31 @@ function addDept() {
       name: 'deptartment_name',
       message: 'What is the name of the department?',
       type: 'input',
+    }
+  ])
+  .then(function(answers){
+    console.log(answers);
+    //need to add the depts.post route here
+  })
+}; 
+
+function addRole() {
+  inquirer.prompt([
+    {
+      name: 'title',
+      message: 'What is the title for this new role?',
+      type: 'input',
+    },
+    {
+      name: 'salary',
+      message: 'What is the salary for this role?',
+      type: 'input',
+    }, 
+    {
+      name: 'department_id',
+      message: 'What department is this new role in?',
+      type: 'list',
+      choices: ['Accounting', 'Sales', 'Design', 'Engineering', 'Marketing']
     }
   ])
   .then(function(answers){

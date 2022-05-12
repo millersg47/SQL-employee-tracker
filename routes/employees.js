@@ -24,8 +24,15 @@ emps.get('/api/employees', (req, res) =>{
 });
 
 emps.post('/api/employees', (req, res) =>{
-    db.query('INSERT INTO', function (err, results) {
-      });
+  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
+  const params = [
+    answers.first_name,
+    answers.last_name,
+    answers.role_id,
+    answers.manager_id,
+]
+  db.query(sql, params, (err, results) => {
+    });
 
 
 });
