@@ -16,17 +16,24 @@ const db = mysql.createConnection(
 
 
 depts.get('/api/departments', (req, res) =>{
-    db.query('SELECT * from departments', function (err, results) {
+  const sql = 'SELECT * from departments'
+    db.query(sql, (err, results) => {
+      if(err) {
+        res.status(500).json({error: err.message});
+        return;
+      }
+      res.json({
+        message: 'success',
+        data: results,
+      })
       });
-
-
 });
 
-depts.post('/api/departments', (req, res) =>{
-    db.query('', function (err, results) {
-      });
+// depts.post('/api/departments', (req, res) =>{
+//     db.query('', function (err, results) {
+//       });
 
 
-});
+// });
 
 module.exports = depts;
