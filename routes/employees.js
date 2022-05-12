@@ -16,7 +16,8 @@ const db = mysql.createConnection(
 
 
 emps.get('/api/employees', (req, res) =>{
-    db.query('SELECT * from employees', function (err, results) {
+  const sql = 'SELECT * from employees';
+    db.query(sql, function (err, results) {
       });
 
 
