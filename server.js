@@ -5,6 +5,18 @@ const api = require('./routes/index.js');
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: 'localhost',
+    // MySQL username,
+    user: 'root',
+    // MySQL password
+    password: 'mysqlpassword',
+    database: 'business_db'
+  },
+);
+
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -45,13 +57,12 @@ function checkAns(answer) {
   } else if (answer === 'add a department') {
     //collects user input
     addDept();
-    //need to add depts.post route here
   } else if (answer === 'add a role') {
     //collects user input
     addRole();
-    //need to add roles.post route here
   } else if (answer === 'add an employee') {
-  
+    //collects user input
+    addEmployee()
   } else if (answer === 'update an employee') {
 
   }
@@ -95,6 +106,50 @@ function addRole() {
   .then(function(answers){
     console.log(answers);
     //need to add the depts.post route here
+  })
+  .then(firstQ())
+};
+
+function addEmployee() {
+  let roles = [];
+  let managers = [];
+
+  //how can I query for the last names and concatenate the results for each row? 
+  db.query('SELECT employees.first_name FROM employees', function(err, results) {
+    managers.push(results);
+  })
+
+  db.query('SELECT roles.title FROM roles', function(err, results) {
+    roles.push(results);
+  })
+
+  inquirer.prompt([
+    {
+      name: 'firstName',
+      message: 'What is their first name?',
+      type: 'input',
+    },
+    {
+      name: 'lastName',
+      message: 'What is their last name?',
+      type: 'input',
+    },
+    {
+      name: 'role',
+      message: 'What is their role?',
+      type: 'choices',
+      choices: roles
+    },
+    {
+      name: 'manager',
+      message: 'Who is their manager?',
+      type: 'choices',
+      choices: managers
+    },
+  ])
+  .then(function(answers){
+    console.log(answers);
+    //need to add the emps.post route here
   })
   .then(firstQ())
 }
