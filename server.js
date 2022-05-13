@@ -78,10 +78,8 @@ function addDept() {
       type: 'input',
     }
   ])
-  .then(answers => {
-    console.log(answers);
-    const userAns = (answers['deptartment_name']);
-    console.log(userAns);
+  .then(answer => {
+    const userAns = (answer['deptartment_name']);
     addDeptQuery(userAns);
   })
 }; 
@@ -96,7 +94,7 @@ const addDeptQuery = (answer) => {
       console.log({error:err.message});
       return;
     }
-    console.log('success,' + results + 'department added to database');
+    console.log('Success, department added to database!');
     firstQ();
   });
 };
@@ -128,26 +126,6 @@ const getEmployees = () => {
     });
 };
 
-const addRoleQuery = () =>{
-
-  const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
-  const params = [answers.title, answers.salary, answers.department_id]
-
-  db.query(sql, params, (err, results) => {
-    if (err) {
-      console.log({error:err.message});
-      return;
-    }
-    console.log({
-      message: 'success',
-      data: answers,
-    });
-    firstQ();
-  });
-
-
-};
-
 function addRole() {
   const sql = 'SELECT department_name as name, id as value FROM departments';
   db.query(sql, (err, departmentList) => {
@@ -169,10 +147,35 @@ function addRole() {
         choices: departmentList
       }
     ])
-    .then(function(answers){
-      addRoleQuery (answers);
+    .then(answer => {
+      console.log(answer);
+      const title = (answer['title']);
+      const salary = (answer['salary']);
+      const department = (answer['department_id']);
+      addRoleQuery (title, salary, department);
     })
   });
+};
+
+const addRoleQuery = (title, salary, department) => {
+
+
+  const roleSql = `INSERT INTO roles (title, salary, department_id) VALUES (?)`;
+  const params = [title, salary, department];
+
+  db.query(roleSql, params, (err, results) => {
+    if (err) {
+      console.log({error:err.message});
+      return;
+    }
+    console.log({
+      message: 'success',
+      data: results,
+    });
+    firstQ();
+  });
+
+
 };
 
 const addEmpQuery = (answers) => {
