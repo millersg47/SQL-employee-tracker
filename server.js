@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
 const cTable = require('console.table');
+
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -31,8 +32,9 @@ function firstQ(){
       type: 'list'
     }
   ])
-   .then (function(answer) {
-     checkAns(answer);
+   .then (answers => {
+     let answer = (answers["starterQuest"]); 
+      checkAns(answer);
    });
 }
 
@@ -44,48 +46,92 @@ function checkAns(answer) {
   } else if (answer === 'view all employees') {
     getEmployees();
   } else if (answer === 'add a department') {
-    //collects user input
     addDept();
   } else if (answer === 'add a role') {
     addRole();
   } else if (answer === 'add an employee') {
     addEmployee()
-  } else if (answer === 'update an employee') {
-    //need to write this function
+  } else if (answer === 'update an employee role') {
     updateEmployee();
   }
 
 }
 
 const getDepts = () => {
-  const sql = 'SELECT * from departments'
+  const sql = 'SELECT departments.id as dept_id, departments.department_name as dept_name from departments'
   db.query(sql, (err, results) => {
     if(err) {
       console.log({error: err.message});
       return;
     }
-    const deptsTable = cTable.getTable([results]);
-    console.log(deptsTable);
+    console.table(results);
+  
     firstQ();
   });
 };
 
 function addDept() {
-  inquirer.prompt([
+  return inquirer.prompt([
     {
       name: 'deptartment_name',
       message: 'What is the name of the department?',
       type: 'input',
     }
   ])
-  .then(function(answers){
-    addDeptQuery(answers);
+  .then(answers => {
+    console.log(answers)
+    var answer = (answers["department_name"]);
+    console.log(answer);
+    addDeptQuery(answer);
   })
 }; 
 
-const addDeptQuery = (answers) => {
+const addDeptQuery = (answer) => {
+  console.log(answer);
   const sql = 'INSERT INTO departments (department_name) VALUES (?)';
-  const params = [answers.department_name];
+  const params = [answer];
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.log({error:err.message});
+      return;
+    }
+    console.log('success,' + results + 'department added to database');
+    firstQ();
+  });
+};
+
+const getRoles = () => {
+  const sql = 'SELECT roles.id as role_id, roles.title as job_title, roles.salary as role_salary, departments.department_name as dept_name FROM roles JOIN departments ON roles.department_id = departments.id';
+
+  db.query(sql, function (err, results) {
+    if(err) {
+      console.log({error: err.message});
+      return;
+    }
+    console.table(results);
+    firstQ();
+    });
+};
+
+const getEmployees = () => {
+  //not sure how to capture manager's first name and last name here 
+  const sql = 'SELECT employees.id as employee_id, employees.first_name as first_name, employees.last_name as last_name, roles.title as job_title, roles.salary as role_salary, employees.manager_id as manager_id FROM employees JOIN roles ON employees.role_id = roles.id';
+
+  db.query(sql, function (err, results) {
+    if(err) {
+      console.log({error: err.message});
+      return;
+    }
+    console.table(results);
+    firstQ();
+    });
+};
+
+const addRoleQuery = () =>{
+
+  const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
+  const params = [answers.title, answers.salary, answers.department_id]
 
   db.query(sql, params, (err, results) => {
     if (err) {
@@ -98,35 +144,8 @@ const addDeptQuery = (answers) => {
     });
     firstQ();
   });
-};
 
-const getRoles = () =>{
-  const sql = 'SELECT roles.id as role_id, roles.title as title, roles.salary as role_salary, roles.department_id as dept_id, departments.department_name as dept_name FROM roles JOIN departments ON roles.department_id = departments.id';
 
-  db.query(sql, function (err, results) {
-    if(err) {
-      console.log({error: err.message});
-      return;
-    }
-    const rolesTable = cTable.getTable([results]);
-    console.log(rolesTable);
-    firstQ();
-    });
-};
-
-const getEmployees = () => {
-  //not sure how to capture manager's first name and last name here 
-  const sql = 'SELECT employees.id as employee_id, employees.first_name as first_name, employees.last_name as last_name, employees.role_id as role_id, roles.title as title, roles.salary as role_salary, employees.manager_id as manager_id FROM employees';
-
-  db.query(sql, function (err, results) {
-    if(err) {
-      console.log({error: err.message});
-      return;
-    }
-    const employeesTable = cTable.getTable([results]);
-    console.log(employeesTable);
-    firstQ();
-    });
 };
 
 function addRole() {
@@ -156,25 +175,25 @@ function addRole() {
   });
 };
 
-
-const addRoleQuery = () =>{
-
-    const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
-    const params = [answers.title, answers.salary, answers.department_id]
-
-    db.query(sql, params, (err, results) => {
-      if (err) {
-        console.log({error:err.message});
-        return;
-      }
-      console.log({
-        message: 'success',
-        data: answers,
-      });
-      firstQ();
+const addEmpQuery = (answers) => {
+  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
+  const params = [
+    answers.first_name,
+    answers.last_name,
+    answers.role_id,
+    answers.manager_id,
+  ]
+  db.query(sql, params, (err, results) => {
+    if (err) {
+    console.log({error:err.message});
+    return;
+    }
+    console.log({
+      message: 'success',
+      data: answers,
     });
- 
-
+    firstQ();
+});
 };
 
 async function addEmployee() {
@@ -210,28 +229,5 @@ async function addEmployee() {
     addEmpQuery(answers);
 };
 
-const addEmpQuery = (answers) => {
-  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
-  const params = [
-    answers.first_name,
-    answers.last_name,
-    answers.role_id,
-    answers.manager_id,
-]
-  db.query(sql, params, (err, results) => {
-    if (err) {
-    console.log({error:err.message});
-    return;
-    }
-    console.log({
-      message: 'success',
-      data: answers,
-    });
-    firstQ();
-});
-};
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-  
+
