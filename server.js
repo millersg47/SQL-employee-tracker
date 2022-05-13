@@ -94,7 +94,7 @@ const addDeptQuery = (answer) => {
       console.log({error:err.message});
       return;
     }
-    console.log('Success, department added to database!');
+    console.log('Success, department added to the departments table!');
     firstQ();
   });
 };
@@ -168,37 +168,23 @@ const addRoleQuery = (title, salary, department) => {
       console.log({error:err.message});
       return;
     }
-    console.log({
-      message: 'success',
-      data: results,
-    });
+    console.log('Success, role added to the roles table!');
     firstQ();
   });
 
 
 };
 
-const addEmpQuery = (answers) => {
-  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
-  console.log( answers.first_name,
-    answers.last_name,
-    answers.role_id,
-    answers.manager_id)
-  const params = [
-    answers.first_name,
-    answers.last_name,
-    answers.role_id,
-    answers.manager_id
-  ]
+const addEmpQuery = (firstName, lastName, role, manager) => {
+  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+  const params = [firstName, lastName, role, manager];
+
   db.query(sql, params, (err, results) => {
     if (err) {
     console.log({error:err.message});
     return;
     }
-    console.log({
-      message: 'success',
-      data: answers,
-    });
+    console.log('Success, employee added to the employees table!');
     firstQ();
 });
 };
@@ -234,9 +220,12 @@ async function addEmployee() {
     },
   ]);
   const firstName = (answers['firstName']);
-  console.log(firstName)
-  console.log(answers.firstName);
-    addEmpQuery(answers);
+  const lastName = (answers['lastName']);
+  const role = (answers['role']);
+  const manager = (answers['manager']);
+  console.log(firstName, lastName, role, manager);
+  
+  addEmpQuery(firstName, lastName, role, manager);
 };
 
 
