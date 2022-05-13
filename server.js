@@ -1,10 +1,6 @@
-const express = require('express');
 const inquirer = require("inquirer");
-const api = require('./routes/index.js');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
+const mysql = require('mysql2');
+const cTable = require('console.table');
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -15,15 +11,8 @@ const db = mysql.createConnection(
     password: 'mysqlpassword',
     database: 'business_db'
   },
+  firstQ()
 );
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-app.use('/api', api);
-
-firstQ();
 
 function firstQ(){
   inquirer.prompt([
@@ -49,25 +38,37 @@ function firstQ(){
 
 function checkAns(answer) {
   if(answer === 'view all departments') {
-  //need to add the depts.get route here
+    getDepts();
   } else if (answer === 'view all roles') {
-  //need to add the roles.get route here
+    getRoles();
   } else if (answer === 'view all employees') {
-  //need to add the emps.get route here
+    getEmployees();
   } else if (answer === 'add a department') {
     //collects user input
     addDept();
   } else if (answer === 'add a role') {
-    //collects user input
     addRole();
   } else if (answer === 'add an employee') {
-    //collects user input
     addEmployee()
   } else if (answer === 'update an employee') {
-
+    //need to write this function
+    updateEmployee();
   }
 
 }
+
+const getDepts = () => {
+  const sql = 'SELECT * from departments'
+  db.query(sql, (err, results) => {
+    if(err) {
+      console.log({error: err.message});
+      return;
+    }
+    const deptsTable = cTable.getTable([results]);
+    console.log(deptsTable);
+    firstQ();
+  });
+};
 
 function addDept() {
   inquirer.prompt([
@@ -78,11 +79,55 @@ function addDept() {
     }
   ])
   .then(function(answers){
-    console.log(answers);
-    //need to add the depts.post route here
+    addDeptQuery(answers);
   })
-  .the(firstQ())
 }; 
+
+const addDeptQuery = (answers) => {
+  const sql = 'INSERT INTO departments (department_name) VALUES (?)';
+  const params = [answers.department_name];
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.log({error:err.message});
+      return;
+    }
+    console.log({
+      message: 'success',
+      data: answers,
+    });
+    firstQ();
+  });
+};
+
+const getRoles = () =>{
+  const sql = 'SELECT roles.id as role_id, roles.title as title, roles.salary as role_salary, roles.department_id as dept_id, departments.department_name as dept_name FROM roles JOIN departments ON roles.department_id = departments.id';
+
+  db.query(sql, function (err, results) {
+    if(err) {
+      console.log({error: err.message});
+      return;
+    }
+    const rolesTable = cTable.getTable([results]);
+    console.log(rolesTable);
+    firstQ();
+    });
+};
+
+const getEmployees = () => {
+  //not sure how to capture manager's first name and last name here 
+  const sql = 'SELECT employees.id as employee_id, employees.first_name as first_name, employees.last_name as last_name, employees.role_id as role_id, roles.title as title, roles.salary as role_salary, employees.manager_id as manager_id FROM employees';
+
+  db.query(sql, function (err, results) {
+    if(err) {
+      console.log({error: err.message});
+      return;
+    }
+    const employeesTable = cTable.getTable([results]);
+    console.log(employeesTable);
+    firstQ();
+    });
+};
 
 function addRole() {
   inquirer.prompt([
@@ -100,14 +145,32 @@ function addRole() {
       name: 'department_id',
       message: 'What department is this new role in?',
       type: 'list',
-      choices: ['Accounting', 'Sales', 'Design', 'Engineering', 'Marketing']
+      choices: [{name: 'Accounting', value: 1}, {name: 'Sales', value: 2}, {name: 'Design', value: 3}, {name: 'Engineering', value: 4}, {name: 'Marketing', value: 5}]
     }
   ])
   .then(function(answers){
-    console.log(answers);
-    //need to add the depts.post route here
+    addRoleQuery (answers);
   })
-  .then(firstQ())
+
+};
+
+
+const addRoleQuery = () =>{
+  const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
+  const params = [answers.title, answers.salary, answers.department_id]
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.log({error:err.message});
+      return;
+    }
+    console.log({
+      message: 'success',
+      data: answers,
+    });
+    firstQ();
+  });
+
 };
 
 function addEmployee() {
@@ -148,11 +211,31 @@ function addEmployee() {
     },
   ])
   .then(function(answers){
-    console.log(answers);
+    addEmpQuery(answers);
     //need to add the emps.post route here
   })
-  .then(firstQ())
-}
+};
+
+const addEmpQuery = (answers) => {
+  const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
+  const params = [
+    answers.first_name,
+    answers.last_name,
+    answers.role_id,
+    answers.manager_id,
+]
+  db.query(sql, params, (err, results) => {
+    if (err) {
+    console.log({error:err.message});
+    return;
+    }
+    console.log({
+      message: 'success',
+      data: answers,
+    });
+    firstQ();
+});
+};
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

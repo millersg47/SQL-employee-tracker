@@ -17,22 +17,22 @@ VALUES ("Sales Manager", 110000, 2),
        ("Marketing Coordinator", 75000, 5),
        ("Marketing Manager", 95000, 5),
        ("Art Director", 140000, 3),
-       ("Software Manager", 145000, 4)
+       ("Software Manager", 145000, 4);
 
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ("Sam", "Smith", 4 , 11),
-       ("Archer", "Adams", 2 , 3),
-       ("Debbie", "Doser", 9, 10),
-       ("Hillary", "Hammond", 6, 12),
-       ("Christy", "Cameron", 1),
-       ("Charlie", "Crenshaw", 7, 12),
-       ("Andrew", "Anderson", 1),
-       ("Conor", "Goodwin", 8, 1),
-       ("Matt", "Sanchez", 5, 11), 
-       ("Lena", "Villani", 8, 1),
-       ("Ryan", "Baerwolf", 7, 12),
-       ("Shannon", "Parmley", 3),
-       ("Max", "Shelbourne", 6, 12),
-       ("Emily", "Bartlett", 11),
-       ("Rachel", "Griffing", 12)
+VALUES ("Sam", "Smith", 4 , null),
+       ("Archer", "Adams", 2 , null),
+       ("Debbie", "Doser", 9, null),
+       ("Hillary", "Hammond", 6, null),
+       ("Christy", "Cameron", 1, null),
+       ("Charlie", "Crenshaw", 7, null),
+       ("Andrew", "Anderson", 1, null),
+       ("Conor", "Goodwin", 8, null),
+       ("Matt", "Sanchez", 5, null), 
+       ("Lena", "Villani", 8, null),
+       ("Ryan", "Baerwolf", 7, null),
+       ("Shannon", "Parmley", 3, null),
+       ("Max", "Shelbourne", 6, null),
+       ("Emily", "Bartlett", 11, null),
+       ("Rachel", "Griffing", 12, null);
