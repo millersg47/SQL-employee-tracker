@@ -130,63 +130,60 @@ const getEmployees = () => {
 };
 
 function addRole() {
-  inquirer.prompt([
-    {
-      name: 'title',
-      message: 'What is the title for this new role?',
-      type: 'input',
-    },
-    {
-      name: 'salary',
-      message: 'What is the salary for this role?',
-      type: 'input',
-    }, 
-    {
-      name: 'department_id',
-      message: 'What department is this new role in?',
-      type: 'list',
-      choices: [{name: 'Accounting', value: 1}, {name: 'Sales', value: 2}, {name: 'Design', value: 3}, {name: 'Engineering', value: 4}, {name: 'Marketing', value: 5}]
-    }
-  ])
-  .then(function(answers){
-    addRoleQuery (answers);
-  })
-
+  const sql = 'SELECT department_name as name, id as value FROM departments';
+  db.query(sql, (err, departmentList) => {
+    inquirer.prompt([
+      {
+        name: 'title',
+        message: 'What is the title for this new role?',
+        type: 'input',
+      },
+      {
+        name: 'salary',
+        message: 'What is the salary for this role?',
+        type: 'input',
+      }, 
+      {
+        name: 'department_id',
+        message: 'What department is this new role in?',
+        type: 'list',
+        choices: departmentList
+      }
+    ])
+    .then(function(answers){
+      addRoleQuery (answers);
+    })
+  });
 };
 
 
 const addRoleQuery = () =>{
-  const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
-  const params = [answers.title, answers.salary, answers.department_id]
 
-  db.query(sql, params, (err, results) => {
-    if (err) {
-      console.log({error:err.message});
-      return;
-    }
-    console.log({
-      message: 'success',
-      data: answers,
+    const sql = 'INSERT INTO roles(title, salary, department_id), VALUES (?)';
+    const params = [answers.title, answers.salary, answers.department_id]
+
+    db.query(sql, params, (err, results) => {
+      if (err) {
+        console.log({error:err.message});
+        return;
+      }
+      console.log({
+        message: 'success',
+        data: answers,
+      });
+      firstQ();
     });
-    firstQ();
-  });
+ 
 
 };
 
-function addEmployee() {
-  let roles = [];
-  let managers = [];
-
+async function addEmployee() {
   //how can I query for the last names and concatenate the results for each row? 
-  db.query('SELECT employees.first_name FROM employees', function(err, results) {
-    managers.push(results);
-  })
+  const [ managers ] = await db.promise().query('SELECT CONCAT(first_name, last_name) as name, id as value FROM employees');
 
-  db.query('SELECT roles.title FROM roles', function(err, results) {
-    roles.push(results);
-  })
+  const [ roles ] = await db.promise().query('SELECT title as name, id as value FROM roles');
 
-  inquirer.prompt([
+  const answers = await inquirer.prompt([
     {
       name: 'firstName',
       message: 'What is their first name?',
@@ -210,10 +207,7 @@ function addEmployee() {
       choices: managers
     },
   ])
-  .then(function(answers){
     addEmpQuery(answers);
-    //need to add the emps.post route here
-  })
 };
 
 const addEmpQuery = (answers) => {
