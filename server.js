@@ -160,7 +160,7 @@ function addRole() {
 const addRoleQuery = (title, salary, department) => {
 
 
-  const roleSql = `INSERT INTO roles (title, salary, department_id) VALUES (?)`;
+  const roleSql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
   const params = [title, salary, department];
 
   db.query(roleSql, params, (err, results) => {
@@ -180,11 +180,15 @@ const addRoleQuery = (title, salary, department) => {
 
 const addEmpQuery = (answers) => {
   const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id), VALUES (?)';
+  console.log( answers.first_name,
+    answers.last_name,
+    answers.role_id,
+    answers.manager_id)
   const params = [
     answers.first_name,
     answers.last_name,
     answers.role_id,
-    answers.manager_id,
+    answers.manager_id
   ]
   db.query(sql, params, (err, results) => {
     if (err) {
@@ -219,16 +223,19 @@ async function addEmployee() {
     {
       name: 'role',
       message: 'What is their role?',
-      type: 'choices',
+      type: 'list',
       choices: roles
     },
     {
       name: 'manager',
       message: 'Who is their manager?',
-      type: 'choices',
+      type: 'list',
       choices: managers
     },
-  ])
+  ]);
+  const firstName = (answers['firstName']);
+  console.log(firstName)
+  console.log(answers.firstName);
     addEmpQuery(answers);
 };
 
