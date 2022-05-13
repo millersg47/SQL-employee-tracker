@@ -79,10 +79,10 @@ function addDept() {
     }
   ])
   .then(answers => {
-    console.log(answers)
-    var answer = (answers["department_name"]);
-    console.log(answer);
-    addDeptQuery(answer);
+    console.log(answers);
+    const userAns = (answers['deptartment_name']);
+    console.log(userAns);
+    addDeptQuery(userAns);
   })
 }; 
 
