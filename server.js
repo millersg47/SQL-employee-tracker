@@ -27,7 +27,7 @@ function firstQ(){
         'add a department', 
         'add a role', 
         'add an employee', 
-        'update an employee',
+        'update an employee role',
         'exit application'],
       type: 'list'
     }
@@ -171,7 +171,6 @@ const addRoleQuery = (title, salary, department) => {
     firstQ();
   });
 
-
 };
 
 const addEmpQuery = (firstName, lastName, role, manager) => {
@@ -189,8 +188,7 @@ const addEmpQuery = (firstName, lastName, role, manager) => {
 };
 
 async function addEmployee() {
-  //how can I query for the last names and concatenate the results for each row? 
-  const [ managers ] = await db.promise().query('SELECT CONCAT(first_name, last_name) as name, id as value FROM employees');
+  const [ managers ] = await db.promise().query('SELECT CONCAT(first_name, " ", last_name) as name, id as value FROM employees');
 
   const [ roles ] = await db.promise().query('SELECT title as name, id as value FROM roles');
 
@@ -227,7 +225,43 @@ async function addEmployee() {
   addEmpQuery(firstName, lastName, role, manager);
 };
 
-updateEmployee() {
-  
+const updateEmployeeQuery = (employeeName, newRole) => {
+  const sql = '';
+  const params = [employeeName, newRole];
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+    console.log({error:err.message});
+    return;
+    }
+    console.log('Success, employee updated in database');
+    firstQ();
+});
 }
+
+async function updateEmployee() {
+  const [ employees ] = await db.promise().query('SELECT CONCAT (first_name, " ", last_name) as name, id as value FROM employees');
+  const [ roles ] = await db.promise().query('SELECT title as name, id as value FROM roles');
+
+  const answers = await inquirer.prompt([
+    {
+      name: 'employeeName',
+      message: 'Which employee would you like to update?',
+      type: 'list',
+      choices: employees
+    }, 
+    {
+      name: 'role',
+      message: 'What is their new role?',
+      type: 'list',
+      choices: roles
+    }
+  ]); 
+
+  const employeeName = (answers['employeeName']);
+  const newRole = (answers['role']);
+
+  updateEmployeeQuery(employeeName, newRole);
+};
+
 

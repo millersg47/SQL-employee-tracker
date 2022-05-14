@@ -35,4 +35,4 @@ VALUES ("Sam", "Smith", 1 , null),
        ("Shannon", "Parmley", 11, null),
        ("Max", "Shelbourne", 6, 3),
        ("Emily", "Bartlett", 10, 1),
-       ("Rachel", "Griffing", 12, 11);
+       ("Rachel", "Griffing", 12, 12);
