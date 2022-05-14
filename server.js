@@ -225,9 +225,9 @@ async function addEmployee() {
   addEmpQuery(firstName, lastName, role, manager);
 };
 
-const updateEmployeeQuery = (employeeName, newRole) => {
-  const sql = '';
-  const params = [employeeName, newRole];
+const updateEmployeeQuery = (employeeName, newRole, newManager) => {
+  const sql = 'UPDATE employees SET role_id = ?, manager_id = ? WHERE id = ?';
+  const params = [newRole, newManager, employeeName];
 
   db.query(sql, params, (err, results) => {
     if (err) {
@@ -242,6 +242,7 @@ const updateEmployeeQuery = (employeeName, newRole) => {
 async function updateEmployee() {
   const [ employees ] = await db.promise().query('SELECT CONCAT (first_name, " ", last_name) as name, id as value FROM employees');
   const [ roles ] = await db.promise().query('SELECT title as name, id as value FROM roles');
+  const [ managers ] = await db.promise().query('SELECT CONCAT(first_name, " ", last_name) as name, id as value FROM employees');
 
   const answers = await inquirer.prompt([
     {
@@ -251,17 +252,24 @@ async function updateEmployee() {
       choices: employees
     }, 
     {
-      name: 'role',
+      name: 'newRole',
       message: 'What is their new role?',
       type: 'list',
       choices: roles
+    }, 
+    {
+      name: 'newManager', 
+      message: 'Who is their new manager?',
+      type: 'list',
+      choices: managers
     }
   ]); 
 
   const employeeName = (answers['employeeName']);
-  const newRole = (answers['role']);
+  const newRole = (answers['newRole']);
+  const newManager = (answers['newManager'])
 
-  updateEmployeeQuery(employeeName, newRole);
+  updateEmployeeQuery(employeeName, newRole, newManager);
 };
 
 
