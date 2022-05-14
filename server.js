@@ -227,5 +227,7 @@ async function addEmployee() {
   addEmpQuery(firstName, lastName, role, manager);
 };
 
-
+updateEmployee() {
+  
+}
 
