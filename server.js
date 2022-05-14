@@ -113,8 +113,7 @@ const getRoles = () => {
 };
 
 const getEmployees = () => {
-  //not sure how to capture manager's first name and last name here 
-  const sql = 'SELECT employees.id as employee_id, employees.first_name as first_name, employees.last_name as last_name, roles.title as job_title, roles.salary as role_salary, employees.manager_id as manager_id FROM employees JOIN roles ON employees.role_id = roles.id';
+  const sql = 'SELECT employees.id as employee_id, CONCAT(employees.first_name, " ", employees.last_name) as employee_name, roles.title as job_title, roles.salary as role_salary, departments.department_name as dept_name, CONCAT(manager.first_name, " ", manager.last_name) as manager FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id LEFT JOIN employees manager ON manager.id = employees.manager_id';
 
   db.query(sql, function (err, results) {
     if(err) {
