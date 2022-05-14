@@ -53,6 +53,9 @@ function checkAns(answer) {
     addEmployee()
   } else if (answer === 'update an employee role') {
     updateEmployee();
+  } else if (answer === 'exit application') {
+    console.log('goodbye!');
+    process.exit();
   }
 
 }
